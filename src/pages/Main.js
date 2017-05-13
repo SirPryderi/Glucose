@@ -3,8 +3,9 @@ import RaisedButton from "material-ui/RaisedButton";
 import FontIcon from "material-ui/FontIcon";
 import FloatingActionButton from "material-ui/FloatingActionButton";
 import InsulinBar from "../components/InsulinBar";
-import Card from "../components/Card";
 import Divider from "material-ui/Divider";
+import Post from "../model/Post";
+import PostCard from "../components/PostCard";
 
 export default class Main extends React.Component {
     static pageProperty = {
@@ -13,6 +14,28 @@ export default class Main extends React.Component {
         showButtonOkay: false,
         parentPage: null
     };
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            posts: null
+        }
+    }
+
+    componentDidMount() {
+        const _this = this;
+
+        Post.getPosts((posts) => {
+            const postCards = posts.map(function (post) {
+                return (
+                    <PostCard key={post.id} post={post}/>
+                );
+            });
+
+            _this.setState({posts: postCards})
+        });
+    }
 
     render() {
         return (<div>
@@ -32,7 +55,7 @@ export default class Main extends React.Component {
 
             <h2>Forum News</h2>
 
-            <Card/>
+            {this.state.posts}
 
         </div>);
     }
