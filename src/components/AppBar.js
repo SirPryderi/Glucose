@@ -5,7 +5,7 @@ import AutoComplete from "material-ui/AutoComplete";
 import AppBar from "material-ui/AppBar";
 /**
  * A simple example of `AppBar` with an icon on the right.
- * By default, the left icon is a navi  gation-menu.
+ * By default, the left icon is a navigation-menu.
  */
 
 export default class AppBarExampleIcon extends React.Component {
