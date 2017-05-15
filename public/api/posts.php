@@ -6,7 +6,7 @@ header("Access-Control-Allow-Origin: *");
 
 require_once "dbconnect.php";
 
-$posts = $db->query("SELECT * FROM posts");
+$posts = $db->query("SELECT * FROM posts ORDER BY date DESC");
 
 $posts_array = [];
 
