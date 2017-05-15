@@ -1,9 +1,13 @@
 <?php
+mb_internal_encoding("UTF-8");
+
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Request-Method: POST');
+header('Content-Type: application/json;charset=UTF-8');
+header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
 
 require_once 'dbconnect.php';
 require_once 'auth.php';
-
-header('Content-Type: application/json');
 
 $auth = new Auth();
 
@@ -13,12 +17,14 @@ $id = $auth->getUserId();
 
 $id = 1;
 
-if (!$title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING)) {
+$payload = json_decode(file_get_contents('php://input'));
+
+if (!$title = filter_var($payload->title, FILTER_SANITIZE_STRING)) {
     echo json_encode(["status" => "error", "message" => "Invalid title"]);
     die();
 }
 
-if (!$body = filter_input(INPUT_POST, 'body', FILTER_SANITIZE_STRING)) {
+if (!$body = filter_var($payload->body, FILTER_SANITIZE_STRING)) {
     echo json_encode(["status" => "error", "message" => "Invalid body"]);
     die();
 }
