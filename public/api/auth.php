@@ -18,7 +18,7 @@ class Auth
         }
 
         try {
-            $salt = $db->query("SELECT salt0 FROM users WHERE username = '$username'")->fetch_assoc()["salt"];
+            $salt = $db->query("SELECT salt FROM users WHERE username = '$username'")->fetch_assoc()["salt"];
 
             if (isset($salt) && !empty($salt)) {
 
@@ -64,7 +64,7 @@ class Auth
         session_destroy();
     }
 
-    public function loginRequired()
+    public function loginRequiredRedirect()
     {
         if (!self::isLogged())
             self::redirectBack();
@@ -81,6 +81,15 @@ class Auth
     {
         $ref = $_SERVER['HTTP_REFERER'];
         header('refresh: 10; url=' . $ref);
+    }
+
+    public function loginRequiredFail()
+    {
+        if (!self::isLogged()) {
+            http_response_code(403);
+            exit;
+        }
+
     }
 
     public function getUserId()
