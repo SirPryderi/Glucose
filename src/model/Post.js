@@ -21,6 +21,23 @@ export default class Post {
         return "https://api.adorable.io/avatars/" + size + "/" + this.authorId + ".png"
     }
 
+    static addPost(title, text, callback) {
+        axios.post('api/addPost.php', {
+            title: title,
+            body: text
+        })
+            .then(function (response) {
+                if(response.data.status === "success"){
+                    response.data.post = new Post(response.data.post);
+                }
+                callback(response.data)
+            })
+            .catch(function (error) {
+                console.error(error);
+                callback({status: "error", message: "Network failure."});
+            })
+    }
+
     static getPosts(callback) {
         axios
             .get("api/posts.php")

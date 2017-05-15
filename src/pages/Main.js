@@ -6,6 +6,7 @@ import InsulinBar from "../components/InsulinBar";
 import Divider from "material-ui/Divider";
 import Post from "../model/Post";
 import PostCard from "../components/PostCard";
+import PostDialog from "../dialogs/PostDialog";
 
 export default class Main extends React.Component {
     static pageProperty = {
@@ -19,25 +20,43 @@ export default class Main extends React.Component {
         super(props);
 
         this.state = {
-            posts: null
-        }
+            posts: null,
+            postModalOpen: false
+        };
+    }
+
+    handleOpenPostModal() {
+        this.setState({postModalOpen: true});
+    }
+
+    handleClosePostModal() {
+        this.setState({postModalOpen: false});
+    }
+
+    appendPost(post) {
+        let a = this.state.posts.slice();
+
+        a.unshift(post);
+
+        this.setState({posts: a});
     }
 
     componentDidMount() {
         const _this = this;
 
         Post.getPosts((posts) => {
-            const postCards = posts.map(function (post) {
-                return (
-                    <PostCard key={post.id} post={post}/>
-                );
-            });
-
-            _this.setState({posts: postCards})
+            _this.setState({posts: posts})
         });
     }
 
     render() {
+
+        const postCards = this.state.posts !== null ? this.state.posts.map(function (post) {
+            return (
+                <PostCard key={post.id} post={post}/>
+            );
+        }) : null;
+
         return (<div>
             <InsulinBar/>
             <div style={{textAlign: "center"}}>
@@ -55,8 +74,16 @@ export default class Main extends React.Component {
 
             <h2>Forum News</h2>
 
-            {this.state.posts}
+            <RaisedButton label="New Post" onClick={() => this.handleOpenPostModal()}/>
 
+            <PostDialog open={this.state.postModalOpen}
+                        handleClose={() => this.handleClosePostModal()}
+                        appendPost={(post) => this.appendPost(post)}/>
+
+            <br/>
+            <br/>
+
+            {postCards}
         </div>);
     }
 }
