@@ -17,6 +17,9 @@ class Auth
             throw new Exception("Missing database connection");
         }
 
+        if (empty($username) && empty($password))
+            self::status(false, "Username or password empty.");
+
         try {
             $salt = $db->query("SELECT salt FROM users WHERE username = '$username'")->fetch_assoc()["salt"];
 
@@ -32,13 +35,13 @@ class Auth
                     $_SESSION["userid"] = $id;
                     $_SESSION["username"] = $username;
 
-                    self::status(true, "Login successful!");
+                    self::status(true, $id);
                 } else {
                     self::status(false, "Invalid username/password combination.");
                 }
 
             } else {
-                echo "Invalid user.";
+                self::status(false, "Unknown user '$username'.");
             }
         } catch (Exception $e) {
             self::status(false, "General login failure.");
@@ -50,9 +53,9 @@ class Auth
     private function status($success, $message)
     {
         if ($success) {
-            $return = ["success", $message];
+            $return = ["status" => "success", "message" => $message];
         } else {
-            $return = ["error", $message];
+            $return = ["status" => "error", "message" => $message];
         }
 
         echo json_encode($return);
