@@ -1,15 +1,15 @@
+/**
+ * PageManager handle the page changing and other useless stuff. Bye. I hate writing comments. Really. Farewell.
+ */
 import React from "react";
 import NavigationDrawer from "./components/NavigationDrawer";
-import AppBar from "./components/AppBar";
 import Main from "./pages/Main";
 import SecondPage from "./pages/SecondPage";
 import FoodPage from "./pages/FoodPage";
 import FoodsListPage from "./pages/FoodsListPage";
 import Food from "./model/Food";
-
-/**
- * PageManager handle the page changing and other useless stuff. Bye. I hate writing comments. Really. Farewell.
- */
+import GlucoseAppBar from "./components/AppBar";
+import LoginDialog from "./dialogs/LoginDialog";
 
 export default class PageManager extends React.Component {
     constructor(props) {
@@ -25,7 +25,13 @@ export default class PageManager extends React.Component {
 
             openDrawer: false,
 
+            openLoginModal: false,
+
             searchBarValue: '',
+
+            loggedInId: null,
+
+            loggedInUsername: null,
 
             foods: Food.getFoodList()
         };
@@ -138,6 +144,22 @@ export default class PageManager extends React.Component {
         });
     }
 
+    setUser(userid, username){
+        this.setState({loggedInId: parseInt(userid, 10), loggedInUsername: username});
+    }
+
+    handleOpenLoginModal() {
+        this.setState({openLoginModal: true});
+    }
+
+    handleCloseLoginModal() {
+        this.setState({openLoginModal: false});
+    }
+
+    handleLogout(){
+        this.setState({loggedInId: null, loggedInUsername: null});
+    }
+
     handleSearchBarUpdateInput(input) {
         this.setState({searchBarValue: input, content: this.state.content});
     }
@@ -148,8 +170,15 @@ export default class PageManager extends React.Component {
 
         return (
             <div>
-                <AppBar handleIconClick={() => this.toggleDrawer()} barState={this.state.barState}
-                        handleSearchBarUpdateInput={(hi) => this.handleSearchBarUpdateInput(hi)}/>
+                <GlucoseAppBar handleIconClick={() => this.toggleDrawer()}
+                               barState={this.state.barState}
+                               handleSearchBarUpdateInput={(hi) => this.handleSearchBarUpdateInput(hi)}
+                               handleOpenLoginModal={() => this.handleOpenLoginModal()}
+                               handleLogout={() => this.handleLogout()}
+                               loggedInId={this.state.loggedInId}
+                               loggedInUsername={this.state.loggedInUsername}
+
+                />
                 <NavigationDrawer open={this.state.openDrawer}
                                   handleIconClick={() => this.toggleDrawer()}
                                   openPage={(what, param) => this.openPage(what, param)}/>
@@ -158,6 +187,10 @@ export default class PageManager extends React.Component {
                 </div>
                 <div>{this.state.searchBarValue}</div>
                 {/*// So, instead of doing this, save the page to a state and generate this using a function, might work*/}
+                <LoginDialog open={this.state.openLoginModal}
+                             setUser={(id, username) => this.setUser(id, username)}
+                             handleClose={() => this.handleCloseLoginModal()}
+                />
             </div>
         );
     }

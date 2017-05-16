@@ -14,11 +14,14 @@ export default class Post {
     }
 
     getAvatarUrl(size) {
+        return Post.getAvatar(this.authorId, size);
+    }
 
+    static getAvatar(id, size) {
         if (typeof size === "undefined")
             size = 40;
 
-        return "https://api.adorable.io/avatars/" + size + "/" + this.authorId + ".png"
+        return "https://api.adorable.io/avatars/" + size + "/" + id + ".png"
     }
 
     static addPost(title, text, callback) {
@@ -27,7 +30,7 @@ export default class Post {
             body: text
         })
             .then(function (response) {
-                if(response.data.status === "success"){
+                if (response.data.status === "success") {
                     response.data.post = new Post(response.data.post);
                 }
                 callback(response.data)

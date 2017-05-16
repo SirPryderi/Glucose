@@ -1,29 +1,16 @@
+/**
+ * A simple example of `AppBar` with an icon on the right.
+ * By default, the left icon is a navigation-menu.
+ */
 import React from "react";
 import FontIcon from "material-ui/FontIcon";
 import IconButton from "material-ui/IconButton";
 import AutoComplete from "material-ui/AutoComplete";
 import AppBar from "material-ui/AppBar";
-/**
- * A simple example of `AppBar` with an icon on the right.
- * By default, the left icon is a navigation-menu.
- */
+import UserBadge from "./UserBadge";
+import {RaisedButton} from "material-ui";
 
-export default class AppBarExampleIcon extends React.Component {
-    constructor(prop) {
-        super(prop);
-
-        const state = {};
-
-        state.barState = this.props.barState;
-
-        // if (this.hasOwnProperty('title')) {
-        //     this.state.title
-        // }
-
-        this.state = state;
-    }
-
-
+export default class GlucoseAppBar extends React.Component {
     render() {
         const leftIcon = this.props.barState.showButtonBack ?
             <IconButton><FontIcon className="material-icons">arrow_back</FontIcon></IconButton> : null;
@@ -31,8 +18,21 @@ export default class AppBarExampleIcon extends React.Component {
         let rightIcon;
 
         if (!this.props.barState.showSearchBar) {
-            rightIcon = this.props.barState.showButtonOkay ?
-                <IconButton><FontIcon className="material-icons">done</FontIcon></IconButton> : null;
+            if (this.props.barState.showButtonOkay) {
+                rightIcon = <IconButton><FontIcon className="material-icons">done</FontIcon></IconButton>;
+            } else {
+                if (this.props.loggedInId)
+                    rightIcon =
+                        <UserBadge style={{marginTop: 4, marginRight: 8}}
+                                   loggedInId={this.props.loggedInId}
+                                   loggedInUsername={this.props.loggedInUsername}
+                                   handleLogout={() => this.props.handleLogout()}
+                        />;
+                else
+                    rightIcon = <RaisedButton label="Login" style={{marginTop: 6, marginRight: 8}}
+                                              onTouchTap={() => this.props.handleOpenLoginModal()}/>
+            }
+
         } else {
             rightIcon = <IconButton><FontIcon className="material-icons">search</FontIcon></IconButton>;
         }
