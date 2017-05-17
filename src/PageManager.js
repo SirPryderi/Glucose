@@ -181,8 +181,10 @@ export default class PageManager extends React.Component {
         this.setState({openLoginModal: false});
     }
 
-    handleLogout() {
-        this.setState({loggedInId: null, loggedInUsername: null});
+    handleLogout(){
+        axios.get("api/logout.php").then(()=>{
+            this.setState({loggedInId: null, loggedInUsername: null});
+        });
     }
 
     handleSearchBarUpdateInput(input) {
