@@ -11,11 +11,9 @@ require_once 'auth.php';
 
 $auth = new Auth();
 
-//$auth->loginRequiredFail();
+$auth->loginRequiredFail();
 
 $id = $auth->getUserId();
-
-$id = 1;
 
 $payload = json_decode(file_get_contents('php://input'));
 

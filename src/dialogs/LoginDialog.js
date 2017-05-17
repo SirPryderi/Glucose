@@ -33,7 +33,7 @@ export default class LoginDialog extends React.Component {
                 onTouchTap={() => {
                     const that = this;
                     axios
-                        .post('http://glucose.com/api/login.php', {
+                        .post('api/login.php', {
                             username: this.state.username,
                             password: this.state.password
                         })

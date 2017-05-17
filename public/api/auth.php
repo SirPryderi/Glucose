@@ -5,7 +5,7 @@ class Auth
 
     function __construct()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE)
+        if (session_status() === PHP_SESSION_NONE)
             session_start();
     }
 
@@ -103,5 +103,13 @@ class Auth
     public function getUserName()
     {
         return $_SESSION["username"];
+    }
+
+    public function whoAmI()
+    {
+        if (isset($_SESSION["userid"], $_SESSION["username"]))
+            return ["userid" => $_SESSION["userid"], "username" => $_SESSION["username"]];
+        else
+            return null;
     }
 }
