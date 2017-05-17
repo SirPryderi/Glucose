@@ -10,6 +10,7 @@ import Main from "./pages/Main";
 import SecondPage from "./pages/SecondPage";
 import FoodPage from "./pages/FoodPage";
 import FoodsListPage from "./pages/FoodsListPage";
+import axios from "axios";
 
 export default class PageManager extends React.Component {
     constructor(props) {
@@ -42,11 +43,13 @@ export default class PageManager extends React.Component {
     }
 
     componentDidMount() {
-        this.openPageNoHistory('Home');
+        const that = this;
+
+        that.openPageNoHistory('Home');
 
         window.onpopstate = (e) => {
-            if (this.state.parentPage) {
-                this.openPageNoHistory(this.state.parentPage);
+            if (that.state.parentPage) {
+                that.openPageNoHistory(this.state.parentPage);
             }
             // history.back();
 
@@ -57,7 +60,16 @@ export default class PageManager extends React.Component {
             // } else {
             //
             // }
-        }
+        };
+
+        axios.get("api/whoami.php")
+            .then(response => {
+                if (response.data !== null)
+                    that.setState({loggedInUsername: response.data.username, loggedInId: response.data.userid})
+            })
+            .catch(error => {
+                console.error("Failed to retrieve current user.", error);
+            })
     }
 
     toggleDrawer() {
