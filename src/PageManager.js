@@ -3,13 +3,13 @@
  */
 import React from "react";
 import NavigationDrawer from "./components/NavigationDrawer";
+import Food from "./model/Food";
+import GlucoseAppBar from "./components/AppBar";
+import LoginDialog from "./dialogs/LoginDialog";
 import Main from "./pages/Main";
 import SecondPage from "./pages/SecondPage";
 import FoodPage from "./pages/FoodPage";
 import FoodsListPage from "./pages/FoodsListPage";
-import Food from "./model/Food";
-import GlucoseAppBar from "./components/AppBar";
-import LoginDialog from "./dialogs/LoginDialog";
 
 export default class PageManager extends React.Component {
     constructor(props) {
@@ -20,6 +20,10 @@ export default class PageManager extends React.Component {
                 showButtonOkay: false,
                 showButtonBack: false,
             },
+
+            currentPage: 'Home',
+
+            currentPageParam: null,
 
             parentPage: null,
 
@@ -68,13 +72,37 @@ export default class PageManager extends React.Component {
     }
 
     openPageNoHistory(what, param) {
+        const content = this.getContent(what, param);
+
+        if (typeof content.type.pageProperty !== "undefined") {
+            this.setState({
+                barState: {
+                    showSearchBar: content.type.pageProperty.showSearchBar,
+                    showButtonOkay: content.type.pageProperty.showButtonOkay,
+                    showButtonBack: content.type.pageProperty.parentPage !== null
+                },
+                parentPage: content.type.pageProperty.parentPage,
+                currentPage: what,
+                currentPageParam: param
+            });
+        }
+    }
+
+    openPage(what, param) {
+        history.pushState({page: what}, what);
+
+        this.openPageNoHistory(what, param);
+    }
+
+    getContent(what, param) {
         let content;
 
         switch (what) {
+            case 'Main':
             case 'Home':
                 content = <Main searchBarValue={this.state}
-                                openPage={(what) => this.openPage(what)}/>;
-                //alert(Main.pageProperty.title);
+                                openPage={(what) => this.openPage(what)}
+                                loggedInUsername={this.state.loggedInUsername}/>;
                 break;
 
             case 'SecondPage':
@@ -102,26 +130,11 @@ export default class PageManager extends React.Component {
                 content = <div><strong>404</strong> - page not found.</div>
         }
 
-        if (typeof content.type.pageProperty !== "undefined") {
-            this.setState({
-                barState: {
-                    showSearchBar: content.type.pageProperty.showSearchBar,
-                    showButtonOkay: content.type.pageProperty.showButtonOkay,
-                    showButtonBack: content.type.pageProperty.parentPage !== null
-                },
-                parentPage: content.type.pageProperty.parentPage
-            });
-        }
-
-        this.setState({
-            content: content
-        })
+        return content;
     }
 
-    openPage(what, param) {
-        history.pushState({page: what}, what);
-
-        this.openPageNoHistory(what, param);
+    getPage() {
+        return this.getContent(this.state.currentPage, this.state.currentPageParam);
     }
 
     handleMe() {
@@ -144,7 +157,7 @@ export default class PageManager extends React.Component {
         });
     }
 
-    setUser(userid, username){
+    setUser(userid, username) {
         this.setState({loggedInId: parseInt(userid, 10), loggedInUsername: username});
     }
 
@@ -156,7 +169,7 @@ export default class PageManager extends React.Component {
         this.setState({openLoginModal: false});
     }
 
-    handleLogout(){
+    handleLogout() {
         this.setState({loggedInId: null, loggedInUsername: null});
     }
 
@@ -183,10 +196,9 @@ export default class PageManager extends React.Component {
                                   handleIconClick={() => this.toggleDrawer()}
                                   openPage={(what, param) => this.openPage(what, param)}/>
                 <div style={{padding: 20, paddingTop: 90}}>
-                    {this.state.content}
+                    {this.getPage()}
                 </div>
                 <div>{this.state.searchBarValue}</div>
-                {/*// So, instead of doing this, save the page to a state and generate this using a function, might work*/}
                 <LoginDialog open={this.state.openLoginModal}
                              setUser={(id, username) => this.setUser(id, username)}
                              handleClose={() => this.handleCloseLoginModal()}

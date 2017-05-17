@@ -34,6 +34,7 @@ export default class PostDialog extends React.Component {
                     Post.addPost(this.state.postTitle, this.state.postText, (status) => {
 
                         if (status.status === "success") {
+                            status.post.authorUsername = this.props.loggedInUsername;
                             this.props.appendPost(status.post);
                             this.props.handleClose()
                         } else {
@@ -55,7 +56,7 @@ export default class PostDialog extends React.Component {
                 open={this.props.open}
             >
 
-                Write a new post.<br />
+                Write a new post as <i>{this.props.loggedInUsername}</i>.<br />
 
                 <TextField
                     floatingLabelText="Title"

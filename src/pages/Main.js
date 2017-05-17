@@ -57,6 +57,8 @@ export default class Main extends React.Component {
             );
         }) : null;
 
+        const newPostButton = this.props.loggedInUsername ? <RaisedButton label="New Post" onClick={() => this.handleOpenPostModal()}/> : null;
+
         return (<div>
             <InsulinBar/>
             <div style={{textAlign: "center"}}>
@@ -74,11 +76,12 @@ export default class Main extends React.Component {
 
             <h2>Forum News</h2>
 
-            <RaisedButton label="New Post" onClick={() => this.handleOpenPostModal()}/>
+            {newPostButton}
 
             <PostDialog open={this.state.postModalOpen}
                         handleClose={() => this.handleClosePostModal()}
-                        appendPost={(post) => this.appendPost(post)}/>
+                        appendPost={(post) => this.appendPost(post)}
+                        loggedInUsername={this.props.loggedInUsername}/>
 
             <br/>
             <br/>
