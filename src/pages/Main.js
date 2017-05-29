@@ -41,6 +41,17 @@ export default class Main extends React.Component {
         this.setState({posts: a});
     }
 
+    removePost(post){
+        const index = this.state.posts.indexOf(post);
+
+        if(index === -1)
+            return;
+
+        this.state.posts.splice(index, 1);
+
+        this.setState({posts: this.state.posts.slice()});
+    }
+
     componentDidMount() {
         const _this = this;
 
@@ -50,10 +61,11 @@ export default class Main extends React.Component {
     }
 
     render() {
+        const that = this;
 
         const postCards = this.state.posts !== null ? this.state.posts.map(function (post) {
             return (
-                <PostCard key={post.id} post={post}/>
+                <PostCard key={post.id} post={post} handleRemove={(post) => that.removePost(post)}/>
             );
         }) : null;
 

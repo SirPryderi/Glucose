@@ -37,7 +37,23 @@ export default class Post {
             })
             .catch(function (error) {
                 console.error(error);
-                callback({status: "error", message: "Network failure."});
+                callback({status: "error", message: "General failure. " + error});
+            })
+    }
+
+    static removePost(id, callback) {
+        axios.post('api/removePost.php', {
+            id: id
+        })
+            .then(function (response) {
+                if (response.data.status === "success") {
+                    response.data.post = new Post(response.data.post);
+                }
+                callback(response.data)
+            })
+            .catch(function (error) {
+                console.error(error);
+                callback({status: "error", message: "General failure. " + error});
             })
     }
 

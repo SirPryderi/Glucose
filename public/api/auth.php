@@ -46,8 +46,6 @@ class Auth
         } catch (Exception $e) {
             self::status(false, "General login failure.");
         }
-
-
     }
 
     private function status($success, $message)
