@@ -9,8 +9,14 @@ export default class Post {
         this.title = json_data.title;
         this.body = json_data.body;
         this.date = json_data.date;
-        this.authorId = json_data.author_id;
-        this.authorUsername = json_data.username;
+        if (typeof json_data.author_id !== "undefined")
+            this.authorId = json_data.author_id;
+        if (typeof json_data.authorId !== "undefined")
+            this.authorId = json_data.authorId;
+        if (typeof json_data.username !== "undefined")
+            this.authorUsername = json_data.username;
+        if (typeof json_data.authorUsername !== "undefined")
+            this.authorUsername = json_data.authorUsername;
     }
 
     getAvatarUrl(size) {

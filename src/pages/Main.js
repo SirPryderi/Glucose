@@ -41,15 +41,34 @@ export default class Main extends React.Component {
         this.setState({posts: a});
     }
 
-    removePost(post){
+    removePost(post) {
         const index = this.state.posts.indexOf(post);
 
-        if(index === -1)
+        if (index === -1)
             return;
 
         this.state.posts.splice(index, 1);
 
         this.setState({posts: this.state.posts.slice()});
+    }
+
+    editPost(post) {
+        const index = (() => {
+            for (let i = 0; i < this.state.posts.length; i++) {
+                if (this.state.posts[i].id === post.id)
+                    return i;
+            }
+
+            return -1;
+        })();
+
+        if (index === -1)
+            return;
+
+        const posts = this.state.posts.slice();
+        posts[index] = post;
+
+        this.setState({posts: posts});
     }
 
     componentDidMount() {
@@ -65,11 +84,16 @@ export default class Main extends React.Component {
 
         const postCards = this.state.posts !== null ? this.state.posts.map(function (post) {
             return (
-                <PostCard key={post.id} post={post} handleRemove={(post) => that.removePost(post)}/>
+                <PostCard key={post.id}
+                          post={post}
+                          handleRemove={post => that.removePost(post)}
+                          handleEdit={post => that.editPost(post)}
+                />
             );
         }) : null;
 
-        const newPostButton = this.props.loggedInUsername ? <RaisedButton label="New Post" onClick={() => this.handleOpenPostModal()}/> : null;
+        const newPostButton = this.props.loggedInUsername ?
+            <RaisedButton label="New Post" onClick={() => this.handleOpenPostModal()}/> : null;
 
         return (<div>
             <InsulinBar/>

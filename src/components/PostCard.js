@@ -1,8 +1,8 @@
 import React from "react";
 import {Card, CardHeader, CardText, CardTitle} from "material-ui/Card";
 import Paper from "material-ui/Paper";
-import {ActionDelete, ContentCreate} from "material-ui/svg-icons/index";
-import {IconButton} from "material-ui";
+import {ActionDelete, ContentClear, ContentCreate, NavigationCheck} from "material-ui/svg-icons/index";
+import {IconButton, TextField} from "material-ui";
 import Post from "../model/Post";
 
 const style = {
@@ -24,40 +24,109 @@ const toolsStyle = {
     opacity: 0.7
 };
 
-const PostCard = (props) => (
-    <Paper style={style}>
-        <Card>
-            <CardHeader
-                title={decodeHtml(props.post.authorUsername)}
-                subtitle={props.post.date}
-                avatar={props.post.getAvatarUrl()}
-            >
-                <div style={toolsStyle}>
-                    <IconButton tooltip="Delete post" touch={true} tooltipPosition="bottom-left"
-                                onTouchTap={() => {
-                                    Post.removePost(props.post.id, (status) => {
-                                        if (status.status === "success") {
-                                            props.handleRemove(props.post);
-                                        } else {
-                                            alert("Failed to remove the post. " + status.message);
-                                        }
-                                    });
-
-
-                                }}>
-                        <ActionDelete />
-                    </IconButton>
-                    <IconButton tooltip="Edit post" touch={true} tooltipPosition="bottom-left">
-                        <ContentCreate />
-                    </IconButton>
-                </div>
-            </CardHeader>
-            <CardTitle title={props.post.title}/>
-            <CardText>{decodeHtml(props.post.body).split("\n").map((i, index) => {
+const CardTextContent = ({editing, body, handleEdit}) => {
+    return (!editing ?
+        <div>
+            {decodeHtml(body).split("\n").map((i, index) => {
                 return <p key={index}>{i}</p>;
-            })}</CardText>
-        </Card>
-    </Paper>
-);
+            })}
+        </div>
+        :
+        <TextField
+            hintText="Post Content"
+            floatingLabelText="Post Content"
+            multiLine={true}
+            defaultValue={decodeHtml(body)}
+            style={{width: "100%"}}
+            onChange={(_, value) => handleEdit(value)}
+            rows={1}
+        />);
 
-export default PostCard;
+};
+
+export default class PostCard extends React.Component {
+    constructor(props) {
+        super(props);
+
+        const text = this.props.post.body;
+
+        this.state = {
+            editing: false,
+            postText: text
+        }
+    }
+
+
+    render() {
+        const EditIcon = () => {
+            const firstIcon = !this.state.editing ?
+                <IconButton tooltip="Delete post" touch={true} tooltipPosition="bottom-left"
+                            onTouchTap={() => {
+                                Post.removePost(this.props.post.id, (status) => {
+                                    if (status.status === "success") {
+                                        this.props.handleRemove(this.props.post);
+                                    } else {
+                                        alert("Failed to remove the post. " + status.message);
+                                    }
+                                });
+
+
+                            }}>
+                    <ActionDelete />
+                </IconButton>
+                :
+                <IconButton tooltip="Cancel changes" touch={true} tooltipPosition="bottom-left"
+                            onTouchTap={() => {
+                                this.setState({editing: !this.state.editing})
+                            }}>
+                    <ContentClear />
+                </IconButton>;
+
+            const secondIcon = !this.state.editing ?
+                <IconButton tooltip="Edit post" touch={true} tooltipPosition="bottom-left"
+                            onTouchTap={() => {
+                                this.setState({editing: !this.state.editing})
+                            }}>
+                    <ContentCreate />
+                </IconButton> :
+                <IconButton tooltip="Accept changes" touch={true} tooltipPosition="bottom-left"
+                            onTouchTap={() => {
+                                if (this.props.post.body !== this.state.postText) {
+                                    const post = new Post(this.props.post);
+                                    // TODO edited title
+                                    post.body = this.state.postText;
+                                    this.props.handleEdit(post);
+                                }
+
+                                this.setState({editing: !this.state.editing})
+                            }}>
+                    <NavigationCheck />
+                </IconButton>;
+
+            return <div style={toolsStyle}>
+                {firstIcon}
+                {secondIcon}
+            </div>
+        };
+
+        return (
+            <Paper style={style}>
+                <Card>
+                    <CardHeader
+                        title={decodeHtml(this.props.post.authorUsername)}
+                        subtitle={this.props.post.date}
+                        avatar={this.props.post.getAvatarUrl()}
+                    >
+                        <EditIcon/>
+                    </CardHeader>
+                    <CardTitle title={this.props.post.title}/>
+                    <CardText>
+                        <CardTextContent body={this.props.post.body} editing={this.state.editing}
+                                         handleEdit={(value) => this.setState({postText: value})}
+                        />
+                    </CardText>
+                </Card>
+            </Paper>
+        )
+    }
+}
