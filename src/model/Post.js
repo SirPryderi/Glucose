@@ -63,6 +63,24 @@ export default class Post {
             })
     }
 
+    static editPost(post, callback) {
+        axios.post('api/editPost.php', {
+            id: post.id,
+            body: post.body,
+            title: post.title
+        })
+            .then(function (response) {
+                if (response.data.status === "success") {
+                    response.data.post = new Post(response.data.post);
+                }
+                callback(response.data)
+            })
+            .catch(function (error) {
+                console.error(error);
+                callback({status: "error", message: "General failure. " + error});
+            })
+    }
+
     static getPosts(callback) {
         axios
             .get("api/posts.php")

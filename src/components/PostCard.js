@@ -96,9 +96,17 @@ export default class PostCard extends React.Component {
                                     // TODO edited title
                                     post.body = this.state.postText;
                                     this.props.handleEdit(post);
-                                }
 
-                                this.setState({editing: !this.state.editing})
+                                    Post.editPost(post, (status) => {
+                                        if (status.status === "success") {
+                                            this.setState({editing: !this.state.editing})
+                                        } else {
+                                            alert("Failed to edit post. " + status.message);
+                                        }
+                                    })
+                                } else {
+                                    this.setState({editing: !this.state.editing})
+                                }
                             }}>
                     <NavigationCheck />
                 </IconButton>;
